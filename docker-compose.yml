@@ -1,0 +1,39 @@
+version: '4'
+
+services:
+  traccar:
+    container_name: cow-traccar
+    image: traccar/traccar:5.7
+    restart: always
+    ports:
+      - "8082:8082"
+      - "5055:5055"
+    environment:
+      - DB_DRIVER=com.mysql.jdbc.Driver
+      # - DB_URL=jdbc:mysql://mysql:3306/traccar?useSSL=false&allowPublicKeyRetrieval=true
+      - DB_URL=jdbc:mysql://mysql:3306/traccar?serverTimezone=UTC&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;allowMultiQueries=true&amp;autoReconnect=true&amp;useUnicode=yes&amp;characterEncoding=UTF-8&amp;sessionVariables=sql_mode=''
+      - DB_USER=traccar
+      - DB_PASSWORD=traccar
+    depends_on:
+      - mysql
+    volumes:
+      - traccar_data:/opt/traccar/data
+      # - ./conf:/opt/traccar/conf
+
+  mysql:
+    container_name: cow-mysql
+    image: mysql:8.0.33
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=traccar
+      - MYSQL_DATABASE=traccar
+      - MYSQL_USER=traccar
+      - MYSQL_PASSWORD=traccar
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  traccar_data:
+  mysql_data:
